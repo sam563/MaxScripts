@@ -115,9 +115,9 @@ macroScript NameMatcher
 					closestRefObj = undefined
 					
 					-- Get the bounding box of the object
-					bb = getBounds targetObj
-					minPointTarget = bb[1]
-					maxPointTarget = bb[2]
+					targBB = getBounds targetObj
+					minPointTarget = targBB[1]
+					maxPointTarget = targBB[2]
 					
 					for k = 1 to refObjs.count do (
 						refCache = refObjBBCache[k]
@@ -132,13 +132,9 @@ macroScript NameMatcher
 						)
 					)
 					
-					targObj = getBounds targetObj
-					minPointTarget = targObj[1]
-					maxPointTarget = targObj[2]
-					
-					refObj = getBounds closestRefObj
-					minPointRef = refObj[1]
-					maxPointRef = refObj[2]
+					refBB = getBounds closestRefObj
+					minPointRef = refBB[1]
+					maxPointRef = refBB[2]
 					
 					if bbOverlapTest minPointRef maxPointRef minPointTarget maxPointTarget then (
 						nameNew = (closestRefObj.name + targetSuffix.text);
