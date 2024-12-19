@@ -107,10 +107,6 @@ macroScript NameMatcher
 						
 					targetObj = targetObjs[j]
 					
-					if isGroupHead targetObj then (
-						targetObj.children
-					)
-					
 					closestDistToRef = 9999999
 					closestRefObj = undefined
 					
