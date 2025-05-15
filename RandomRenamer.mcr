@@ -7,7 +7,7 @@ macroScript RandomRenamer
 	Rollout menu "Random Renamer" width:320 height:100
 	(
 		Spinner charCountSpinner "Character Count:" width:80 type:#integer range:[1,100,12] tooltip: "Number of characters per name generated"
-		edittext validCharsField "Valid Chars:" text:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" tooltip: "List of characters to be randomly selected"
+		edittext validCharsField "Valid Chars:" text:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" tooltip: "List of characters to be randomly selected from"
 		checkbox forceUniqueCheckbox "Force Unique" checked:true tooltip: "Should each name be forced to be unique?"
 		
 		--Apply Button

@@ -32,33 +32,33 @@ macroScript NameMatcher
 				curNode = nodes[i]
 				if isGroupHead curNode then (
 					deleteItem nodes i --Remove the parent from the array
-
-					for child in curNode.children do (
-						append nodes child --Add children
-					)
 				) else (
 					i += 1 --Only increment index if we havent removed the element at the current index
+				)
+
+				for child in curNode.children do (
+					append nodes child --Add children
 				)
 			)
 		)
 		
 		fn getBounds obj = (
-			return nodeGetBoundingBox obj (matrix3 1)
+			return nodeGetBoundingBox obj (matrix3 1) --get worldspace bounding box positions
 		)
 		
 		fn bbOverlapTest minA maxA minB maxB = (
 			--Check for overlap along the x-axis
-			if maxA.x < minB.x or minA.x > maxB.x then (
+			if maxA.x + 0.001 < minB.x or minA.x > maxB.x + 0.001 then (
 				return false
 			)
 				
 			--Check for overlap along the y-axis
-			if maxA.y < minB.y or minA.y > maxB.y then (
+			if maxA.y + 0.001 < minB.y or minA.y > maxB.y + 0.001 then (
 				return false
 			)
 
 			--Check for overlap along the z-axis
-			if maxA.z < minB.z or minA.z > maxB.z then (
+			if maxA.z + 0.001 < minB.z or minA.z > maxB.z + 0.001 then (
 				return false
 			)
 
@@ -91,7 +91,10 @@ macroScript NameMatcher
 		on applyButton pressed do
 		(
 			if (targetObjs != undefined and targetObjs.count > 0) and (refObjs != undefined and refObjs.count > 0) then (
-								
+				
+				renamedCount = 0
+				objectsMissingRef = #()
+
 				for i = 1 to refObjs.count do (
 					
 					refObj = refObjs[i]
@@ -127,21 +130,37 @@ macroScript NameMatcher
 							closestRefObj = refCache[3]
 						)
 					)
-					
-					refBB = getBounds closestRefObj
-					minPointRef = refBB[1]
-					maxPointRef = refBB[2]
-					
-					if bbOverlapTest minPointRef maxPointRef minPointTarget maxPointTarget then (
-						nameNew = (closestRefObj.name + targetSuffix.text);
-						print ("Renaming object: \"" + targetObj.name + "\" to: \"" + nameNew + "\"")
-						targetObj.name = nameNew
-					) else (
-						print ("WARNING: \"" + targetObj.name + "\" DOES NOT OVERLAP WITH ANY REFERENCE OBJECT!")
+
+					if closestRefObj != undefined then (
+						refBB = getBounds closestRefObj
+						minPointRef = refBB[1]
+						maxPointRef = refBB[2]
+						
+						if bbOverlapTest minPointRef maxPointRef minPointTarget maxPointTarget then (
+							nameNew = (closestRefObj.name + targetSuffix.text);
+
+							if nameNew != targetObj.name then (
+								print ("Renaming object: \"" + targetObj.name + "\" to: \"" + nameNew + "\"")
+								targetObj.name = nameNew
+								renamedCount += 1
+							) else (
+								print ("Names already matching for pair: \"" + targetObj.name + "\" and: \"" + nameNew + "\"")
+							)
+						) else (
+							print ("WARNING: \"" + targetObj.name + "\" DOES NOT OVERLAP WITH ANY REFERENCE OBJECT!")
+							append objectsMissingRef targetObj
+						)
 					)
 				)
 				
+				select objectsMissingRef
+				
+				overlappingPairCount = targetObjs.count - objectsMissingRef.count
+				messageBox ((renamedCount as string) + " object(s) renamed! " + (overlappingPairCount as string) + " object pairs found! Selected " + (objectsMissingRef.count as string) + " object(s) missing an overlapping reference object!")
+
 				DestroyDialog menu
+			) else (
+				messageBox "Target Objects and Reference Objects fields must be populated!"
 			)
 		)
 	)
